@@ -1,0 +1,71 @@
+/* --- FIXED ROOT LAYOUT --- */
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+/* --- MAP MUST HAVE HEIGHT OR SVG DISAPPEARS --- */
+#map {
+  position: relative;
+  width: 100%;
+  height: 80vh; /* MUCH better */
+  margin-top: 1em;
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+/* --- SVG MUST ALLOW POINTER EVENTS FOR TOOLTIP --- */
+#map svg {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+#map circle,
+.legend > div {
+  --color-departures: steelblue;
+  --color-arrivals: darkorange;
+
+  --color: color-mix(
+    in oklch,
+    var(--color-departures) calc(100% * var(--departure-ratio)),
+    var(--color-arrivals)
+  );
+
+  fill: var(--color);
+}
+
+.legend {
+  display: flex;
+  gap: 1em;
+  margin-block: 1em;
+  font-size: 0.9rem;
+}
+
+.legend > div {
+  padding: 0.5em 1em;
+  border-radius: 0.4em;
+  font-weight: 600;
+  color: black;
+  background: var(--color);
+}
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  font-size: 0.85rem;
+  line-height: 1.3;
+  color: #222;
+  transform: translate(-50%, -120%);
+  white-space: nowrap;
+  z-index: 9999;
+  transition: opacity 0.15s ease;
+}
