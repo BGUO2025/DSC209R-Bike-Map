@@ -1,6 +1,10 @@
 import mapboxgl from 'https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/+esm';
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
 
+const tooltip = d3.select("#tooltip");
+if (!tooltip.empty()) {
+    console.log("EMPTYYYYYY")
+}
 // Set your Mapbox access token here
 mapboxgl.accessToken = 'pk.eyJ1IjoiYjZndW8iLCJhIjoiY21odmMycGxjMDhzcTJucHV4aWY3dnBnaSJ9.1-GV6RQBscICW6xswB5R3Q';
 // Check that Mapbox GL JS is loaded
@@ -75,7 +79,6 @@ map.on('load', async () => {
         .range([0, 0.5, 1]);
 
     // Create bike station circle SVG elements via D3.js
-    const tooltip = d3.select("#tooltip");
     const svg = d3.select('#map').select('svg');
     const circles = svg
         // Feed data
@@ -94,21 +97,47 @@ map.on('load', async () => {
         .attr('stroke-width', 1)
         .attr('fill-opacity', 0.6)
         .style('pointer-events', 'auto')
-        // Create SVG elements: Tooltip
-        .on("mousemove", function (event, d) {
-            tooltip
-            .style("opacity", 1)
-            .html(`
+        .on("mouseenter", function(_, d) {
+            // Create a new tooltip div dynamically
+            const tooltip = d3.select("body")
+            .append("div")
+            .attr("class", "tooltip")
+            .style("position", "absolute")
+            .style("pointer-events", "none")
+            .style("background", "white")
+            .style("padding", "6px 10px")
+            .style("border-radius", "6px")
+            .style("box-shadow", "0 2px 6px rgba(0,0,0,0.25)")
+            .style("font-size", "0.85rem")
+            .style("color", "#222")
+            .style("opacity", 1);
+
+            // Update content
+            tooltip.html(`
                 <strong>${d.short_name}</strong><br>
                 ${d.totalTraffic} trips<br>
                 ${d.departures} departures<br>
                 ${d.arrivals} arrivals
-            `)
-            .style("left", event.pageX + "px")
-            .style("top", event.pageY + "px");
+            `);
+
+            // Store tooltip on the element for later removal
+            this._tooltip = tooltip;
+
         })
-        .on("mouseleave", function () {
-            tooltip.style("opacity", 0);
+        .on("mousemove", function(event, d) {
+            // Move the tooltip with the cursor
+            if (this._tooltip) {
+                this._tooltip
+                    .style("left", (event.clientX + 10) + "px")
+                    .style("top", (event.clientY - 10) + "px");
+            }
+        })
+        .on("mouseleave", function() {
+            // Remove tooltip when mouse leaves
+            if (this._tooltip) {
+                this._tooltip.remove();
+                this._tooltip = null;
+            }
         });
 
     // Map event listener for manipulating the map
@@ -254,20 +283,47 @@ function updateScatterPlot(map, circles, stations, trips, radiusScale, timeFilte
         .attr('cy', d => project(map, d).y)
         .style('--departure-ratio', (d) => stationFlow(d.departures / d.totalTraffic))
         // Create Tooltip
-        .on("mousemove", function (event, d) {
-            tooltip
-            .style("opacity", 1)
-            .html(`
+        .on("mouseenter", function(_, d) {
+            // Create a new tooltip div dynamically
+            const tooltip = d3.select("body")
+            .append("div")
+            .attr("class", "tooltip")
+            .style("position", "absolute")
+            .style("pointer-events", "none")
+            .style("background", "white")
+            .style("padding", "6px 10px")
+            .style("border-radius", "6px")
+            .style("box-shadow", "0 2px 6px rgba(0,0,0,0.25)")
+            .style("font-size", "0.85rem")
+            .style("color", "#222")
+            .style("opacity", 1);
+
+            // Update content
+            tooltip.html(`
                 <strong>${d.short_name}</strong><br>
                 ${d.totalTraffic} trips<br>
                 ${d.departures} departures<br>
                 ${d.arrivals} arrivals
-            `)
-            .style("left", event.pageX + "px")
-            .style("top", event.pageY + "px");
+            `);
+
+            // Store tooltip on the element for later removal
+            this._tooltip = tooltip;
+
         })
-        .on("mouseleave", function () {
-            tooltip.style("opacity", 0);
+        .on("mousemove", function(event, d) {
+            // Move the tooltip with the cursor
+            if (this._tooltip) {
+                this._tooltip
+                    .style("left", (event.clientX + 10) + "px")
+                    .style("top", (event.clientY - 10) + "px");
+            }
+        })
+        .on("mouseleave", function() {
+            // Remove tooltip when mouse leaves
+            if (this._tooltip) {
+                this._tooltip.remove();
+                this._tooltip = null;
+            }
         });
 }
 

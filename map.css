@@ -9,7 +9,7 @@ body {
 #map {
   position: relative;
   width: 100%;
-  height: 80vh; /* MUCH better */
+  height: 80vh;
   margin-top: 1em;
 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -18,10 +18,14 @@ body {
 
 /* --- SVG MUST ALLOW POINTER EVENTS FOR TOOLTIP --- */
 #map svg {
-  position: absolute;
-  z-index: 1;
+  position: relative;
+  z-index: 3;
   width: 100%;
   height: 100%;
+  pointer-events: none;
+}
+
+#map circle {
   pointer-events: auto;
 }
 
@@ -55,7 +59,7 @@ body {
 }
 
 .tooltip {
-  position: absolute;
+  position: relative;
   pointer-events: none;
   background: white;
   padding: 6px 10px;
